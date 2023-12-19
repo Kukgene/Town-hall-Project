@@ -1,0 +1,32 @@
+name: Run Tests
+
+on:
+  push:
+    paths:
+      - 'src/backend/**'
+  pull_request:
+    paths:
+      - 'src/backend/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Install dependencies
+        run: poetry install --no-root
+        working-directory: src/backend
+
+      - name: Run Pytest
+        run: poetry run pytest
+        working-directory: src/backend
