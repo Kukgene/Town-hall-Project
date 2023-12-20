@@ -62,8 +62,9 @@ def test_create_recycle_user(client: TestClient, session: Session):
         "/recycle",
         json=ItemRecycleUserCreate(
             id=1, name="test", phone_number="010-1234-5678", bags=3
-        ).model_dump_json(),
+        ).model_dump(),
     )
+    assert response.status_code == 201, "Wrong status code on success"
     assert (
         session.execute(text("SELECT * FROM recycle_users WHERE id=1;")).fetchone()
         is not None
@@ -73,14 +74,14 @@ def test_create_recycle_user(client: TestClient, session: Session):
         "/recycle",
         json=ItemRecycleUserCreate(
             id=1, name="test", phone_number="010-1234-5678", bags=3
-        ).model_dump_json(),
+        ).model_dump(),
     )
     assert response.status_code == 422
     response = client.post(
         "/recycle",
         json=ItemRecycleUserCreate(
             name="test1", phone_number="010-1234-5678", bags=3
-        ).model_dump_json(),
+        ).model_dump(),
     )
     assert (
         session.execute(text("SELECT * FROM recycle_users WHERE id=2;")).fetchone()
