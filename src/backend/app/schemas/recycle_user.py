@@ -2,7 +2,7 @@
 from typing import Optional
 
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 
 class ItemRecycleUserBase(BaseModel):
@@ -18,11 +18,20 @@ class ItemRecycleUserBase(BaseModel):
     bags: int
     created_at: Optional[datetime] = None
 
-    """
-    TODO
-    Define validators here
-    Reference: https://docs.pydantic.dev/2.5/api/functional_validators/
-    """
+    @field_validator('phone_number')
+    @classmethod
+    def validate_phone_number(cls, value):
+        expected_format = "010-xxxx-xxxx"
+        if not value.startswith("010-") or not value[4:].replace("-", "").isdigit():
+            raise ValueError(f"Phone number must be in the format '{expected_format}'")
+        return value
+    
+    @field_validator('bags')
+    @classmethod
+    def validate_bag(cls, value):
+        if not 1 <= value <= 3:
+            raise ValueError("Number of bags must be between 1 and 3 (inclusive)")
+        return value
 
 
 class ItemRecycleUserCreate(ItemRecycleUserBase):
@@ -31,5 +40,6 @@ class ItemRecycleUserCreate(ItemRecycleUserBase):
 
 class ItemRecycleUser(ItemRecycleUserBase):
     """Properties of recycle user fetched from db"""
-
-    # TODO: Overrides id and created_at as required
+    id: int
+    created_at: datetime
+    
