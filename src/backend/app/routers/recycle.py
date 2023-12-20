@@ -1,5 +1,5 @@
 """API Router for /recycle endpoint"""
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 from app.db.models import RecycledUser
 
@@ -18,18 +18,26 @@ router = APIRouter(
 async def create_recycle_user(
     item: ItemRecycleUserCreate, db: Session = Depends(get_db)
 ):
-    """Handle POST /recycle
+    validate_recycle_user(item, db)
+    new_recycled_user = RecycledUser(**item.model_dump())
+    db.add(new_recycled_user)
+    db.commit()
+    db.refresh(new_recycled_user)
+    return new_recycled_user
 
-    TODO
-    1. Receive item endpoint
-    2. Validate if there is no error on the data
-    3. Return created user after creation
-
-    HttpException:
-    422 Error => If id is duplicated
-
-    REFERENCE
-    https://fastapi.tiangolo.com/tutorial/sql-databases/
-
-    Use with RecycledUser Class
+def validate_recycle_user(item: ItemRecycleUserCreate, db: Session):
     """
+    Validate the data in the ItemRecycleUserCreate model.
+
+    Raise HTTPException with 422 Unprocessable Entity status code if validation fails.
+    """
+    # Check if the ID is duplicated in the database
+    if item.id is None:
+        return
+    existing_user = db.query(RecycledUser).filter(RecycledUser.id == item.id).first()
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"User with ID {item.id} already exists"
+        )
+    
