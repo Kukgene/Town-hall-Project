@@ -20,21 +20,21 @@ def test_recycle_user_model():
         assert False, "`id` and `created_at` must be defined automatically"
 
     # Check if error raises on bags > 3 or bags < 1
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         ItemRecycleUserCreate(id=1, name="test", phone_number="010-1234-5678", bags=4)
         ItemRecycleUserCreate(id=1, name="test", phone_number="010-1234-5678", bags=0)
         ItemRecycleUser(id=1, name="test", phone_number="010-1234-5678", bags=4)
         ItemRecycleUser(id=1, name="test", phone_number="010-1234-5678", bags=0)
 
     # Check if error raises on invalid phone number
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         ItemRecycleUserCreate(id=1, name="test", phone_number="01012345678", bags=1)
         ItemRecycleUserCreate(id=1, name="test", phone_number="this-is-test", bags=1)
         ItemRecycleUser(id=1, name="test", phone_number="01012345678", bags=1)
         ItemRecycleUser(id=1, name="test", phone_number="this-is-test", bags=1)
 
     # Check if error raises on required value missing
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         ItemRecycleUser(name="test", phone_number="01012345678", bags=1)
         ItemRecycleUser(
             name="test", phone_number="01012345678", bags=1, created_at=datetime.now()
