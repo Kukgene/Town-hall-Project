@@ -34,7 +34,7 @@ def test_recycle_user_model():
         ItemRecycleUser(id=1, name="test", phone_number="this-is-test", bags=1)
 
     # Check if error raises on required value missing
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         ItemRecycleUser(name="test", phone_number="01012345678", bags=1)
         ItemRecycleUser(
             name="test", phone_number="01012345678", bags=1, created_at=datetime.now()
