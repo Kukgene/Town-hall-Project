@@ -10,7 +10,7 @@ from .conn import Base
 class RecycledUser(Base):
     """Schema for RecycledUser in Database"""
 
-    __tablename__ = "recycled_users"
+    __tablename__ = "recycle_users"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(VARCHAR(50))
